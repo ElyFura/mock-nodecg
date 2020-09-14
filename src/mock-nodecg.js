@@ -19,11 +19,11 @@ class MockReplicant extends EventEmitter {
 
 class MockNodeCGLogger {
     constructor() {
-        this.trace = sinon.spy();
-        this.debug = sinon.spy();
-        this.info = sinon.spy();
-        this.warn = sinon.spy();
-        this.error = sinon.spy();
+        this.trace = typeof sinon === 'undefined' ? function() {} : sinon.spy();
+        this.debug = typeof sinon === 'undefined' ? function() {} : sinon.spy();
+        this.info = typeof sinon === 'undefined' ? function() {} : sinon.spy();
+        this.warn = typeof sinon === 'undefined' ? function() {} : sinon.spy();
+        this.error = typeof sinon === 'undefined' ? function() {} : sinon.spy();
     }
 }
 
@@ -58,6 +58,16 @@ class MockNodeCG extends EventEmitter {
 
     listenFor(messageName, handler) {
         this.on(messageName, handler);
+    }
+
+    unlisten(messageName, handler) {
+        const listeners = this.listeners(messageName);
+        if (listeners.includes(handler)) {
+            this.removeListener(messageName, handler);
+            return true;
+        }
+
+        return false;
     }
 
     static Replicant() {
